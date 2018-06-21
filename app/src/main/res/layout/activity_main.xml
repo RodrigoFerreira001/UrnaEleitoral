@@ -105,7 +105,8 @@
                         android:layout_marginRight="4dp"
                         android:background="@drawable/numero"
                         android:gravity="center_vertical|center_horizontal"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:visibility="gone">
 
                         <TextView
                             android:id="@+id/numero3"

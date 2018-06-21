@@ -8,6 +8,7 @@ public class Candidato {
     private String numero;
     private String partido;
     private Bitmap foto;
+    private int votos = 0;
 
     public String getNome() {
         return nome;
@@ -39,5 +40,13 @@ public class Candidato {
 
     public void setFoto(Bitmap foto) {
         this.foto = foto;
+    }
+
+    public void incVoto(){
+        this.votos++;
+    }
+
+    public int getVotos() {
+        return votos;
     }
 }

@@ -1,10 +1,16 @@
 package urna.seguranca.com.urna.activities;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -12,9 +18,16 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
 import urna.seguranca.com.urna.R;
+import urna.seguranca.com.urna.models.Candidato;
 
 public class MainActivity extends AppCompatActivity {
+
+    ArrayList<Candidato> candidatos = new ArrayList<>();
+    int votosBrancos = 0;
+    int votosNulos = 0;
 
     Button bt1;
     Button bt2;
@@ -57,6 +70,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        loadCandidatos();
+
         v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
         bt1 = findViewById(R.id.bt1);
@@ -89,10 +104,6 @@ public class MainActivity extends AppCompatActivity {
         nomeCandidato = findViewById(R.id.nome_candidato);
         partido = findViewById(R.id.partido);
         partidoCandidato = findViewById(R.id.partido_candidato);
-
-        if(tipoCargoAtual == 0){
-            caixa3.setVisibility(View.GONE);
-        }
 
         bt1.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -174,11 +185,53 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        bt0.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle("Contagem dos votos");
+
+                String votos = "";
+                for(Candidato c : candidatos){
+                    votos += c.getNome() + ": " + c.getVotos() + "\n";
+                }
+
+                votos += "Brancos: " + votosBrancos + "\n";
+                votos += "Nulos: " + votosNulos;
+
+                builder.setMessage(votos);
+
+                builder.create().show();
+
+                return true;
+            }
+        });
+
         btbranco.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 v.vibrate(100);
-                buttonPress(-1);
+
+                fotoCandidato.setVisibility(View.VISIBLE);
+                nome.setVisibility(View.GONE);
+                nomeCandidato.setVisibility(View.VISIBLE);
+                partido.setVisibility(View.GONE);
+                partidoCandidato.setVisibility(View.GONE);
+
+                fotoCandidato.setImageBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.deafault_face));
+
+                nomeCandidato.setText("VOTO EM BRANCO");
+
+                for(TextView t : numeros){
+                    t.setText("0");
+                }
+
+                if(tipoCargoAtual == 0){
+                    numVot = "00";
+                }else
+                if(tipoCargoAtual == 1){
+                    numVot = "000";
+                }
             }
         });
 
@@ -186,7 +239,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 v.vibrate(100);
-                buttonPress(-2);
+                numIndex = 0;
+                numVot = "";
+                for(TextView t : numeros){
+                    t.setText("");
+                }
+
+                fotoCandidato.setVisibility(View.GONE);
+                nome.setVisibility(View.GONE);
+                nomeCandidato.setVisibility(View.GONE);
+                partido.setVisibility(View.GONE);
+                partidoCandidato.setVisibility(View.GONE);
             }
         });
 
@@ -194,7 +257,101 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 v.vibrate(100);
-                buttonPress(-3);
+
+                if(tipoCargoAtual == 0){
+                    if(numVot.length() == 2){
+
+                        boolean found = false;
+
+                        for(Candidato c : candidatos){
+                            if(c.getNumero().equals(numVot)){
+                                c.incVoto();
+                                found = true;
+                                break;
+                            }
+                        }
+
+                        
+                        if(!found){
+                            if(numVot.equals("00") && nomeCandidato.getText().toString().equals("VOTO EM BRANCO")){
+                                votosBrancos++;
+                            }else{
+                                votosNulos++;
+                            }
+                        }
+
+                        caixa3.setVisibility(View.VISIBLE);
+
+                        numIndex = 0;
+                        tipoCargoAtual = 1;
+                        numVot = "";
+                        for(TextView t : numeros){
+                            t.setText("");
+                        }
+
+                        fotoCandidato.setVisibility(View.GONE);
+                        nome.setVisibility(View.GONE);
+                        nomeCandidato.setVisibility(View.GONE);
+                        partido.setVisibility(View.GONE);
+                        partidoCandidato.setVisibility(View.GONE);
+
+                        tipoCargo.setText("Governador");
+
+
+                        MediaPlayer mp = MediaPlayer.create(getBaseContext(), R.raw.confirma);
+                        mp.start();
+                    }
+                }else
+                if(tipoCargoAtual == 1){
+                    if(numVot.length() == 3){
+
+                        boolean found = false;
+
+                        for(Candidato c : candidatos){
+                            if(c.getNumero().equals(numVot)){
+                                c.incVoto();
+                                found = true;
+                                break;
+                            }
+                        }
+
+                        if(!found){
+                            if(numVot.equals("000") && nomeCandidato.getText().toString().equals("VOTO EM BRANCO")){
+                                votosBrancos++;
+                            }else{
+                                votosNulos++;
+                            }
+                        }
+
+                        caixa3.setVisibility(View.GONE);
+
+                        numIndex = 0;
+                        tipoCargoAtual = 0;
+                        numVot = "";
+                        for(TextView t : numeros){
+                            t.setText("");
+                        }
+
+                        fotoCandidato.setVisibility(View.GONE);
+                        nome.setVisibility(View.GONE);
+                        nomeCandidato.setVisibility(View.GONE);
+                        partido.setVisibility(View.GONE);
+                        partidoCandidato.setVisibility(View.GONE);
+
+                        tipoCargo.setText("Presidente");
+
+                        MediaPlayer mp = MediaPlayer.create(getBaseContext(), R.raw.confirma);
+                        mp.start();
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+                        View v = inflater.inflate(R.layout.fim, null);
+                        builder.setView(v);
+                        builder.setPositiveButton("CONFIMAR", null);
+                        builder.setNegativeButton("CANCELAR", null);
+                        builder.create().show();
+                    }
+                }
             }
         });
     }
@@ -240,67 +397,142 @@ public class MainActivity extends AppCompatActivity {
             case 0:
                 addNum(0);
                 break;
-
-            case -1:
-                break;
-
-            case -2:
-
-                Toast.makeText(this, "LENG: " + numVot.length(), Toast.LENGTH_SHORT).show();
-
-                switch (tipoCargoAtual){
-                    case 0:
-                        numIndex = 0;
-                        numVot = "";
-                        for(TextView t : numeros){
-                            t.setText("");
-                        }
-
-                        fotoCandidato.setVisibility(View.GONE);
-                        nome.setVisibility(View.GONE);
-                        nomeCandidato.setVisibility(View.GONE);
-                        partido.setVisibility(View.GONE);
-                        partidoCandidato.setVisibility(View.GONE);
-
-                        break;
-
-                    case 1:
-                        break;
-                }
-                break;
-
-            case -3:
-                MediaPlayer mp = MediaPlayer.create(this, R.raw.confirma);
-                mp.start();
-                break;
         }
     }
 
     public void addNum(int num){
 
-        Toast.makeText(this, "LENG: " + numVot.length(), Toast.LENGTH_SHORT).show();
-
         switch (tipoCargoAtual){
             case 0:
                 if(numVot.length() < 2){
-                    Toast.makeText(this, "Entrou Add", Toast.LENGTH_SHORT).show();
                     numVot += String.valueOf(num);
                     numeros[numIndex].setText(String.valueOf(num));
                     numIndex++;
-                }
 
-                if(numVot.length() == 2){
-                    fotoCandidato.setVisibility(View.VISIBLE);
-                    nome.setVisibility(View.VISIBLE);
-                    nomeCandidato.setVisibility(View.VISIBLE);
-                    partido.setVisibility(View.VISIBLE);
-                    partidoCandidato.setVisibility(View.VISIBLE);
+                    if(numVot.length() == 2){
+
+                        fotoCandidato.setVisibility(View.VISIBLE);
+                        nome.setVisibility(View.VISIBLE);
+                        nomeCandidato.setVisibility(View.VISIBLE);
+                        partido.setVisibility(View.VISIBLE);
+                        partidoCandidato.setVisibility(View.VISIBLE);
+
+                        boolean found = false;
+
+                        for(Candidato c : candidatos){
+
+                            if(c.getNumero().equals(numVot)){
+                                nomeCandidato.setText(c.getNome());
+                                partidoCandidato.setText(c.getPartido());
+                                fotoCandidato.setImageBitmap(c.getFoto());
+                                found = true;
+                                break;
+                            }
+                        }
+
+                        if(!found){
+                            fotoCandidato.setVisibility(View.VISIBLE);
+                            nome.setVisibility(View.VISIBLE);
+                            nomeCandidato.setVisibility(View.VISIBLE);
+                            partido.setVisibility(View.GONE);
+                            partidoCandidato.setVisibility(View.GONE);
+
+                            nomeCandidato.setText("NULO");
+                            fotoCandidato.setImageBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.deafault_face));
+                        }
+                    }
                 }
 
                 break;
 
             case 1:
+                if(numVot.length() < 3){
+                    numVot += String.valueOf(num);
+                    numeros[numIndex].setText(String.valueOf(num));
+                    numIndex++;
+
+                    if(numVot.length() == 3){
+
+                        fotoCandidato.setVisibility(View.VISIBLE);
+                        nome.setVisibility(View.VISIBLE);
+                        nomeCandidato.setVisibility(View.VISIBLE);
+                        partido.setVisibility(View.VISIBLE);
+                        partidoCandidato.setVisibility(View.VISIBLE);
+
+                        boolean found = false;
+
+                        for(Candidato c : candidatos){
+
+                            if(c.getNumero().equals(numVot)){
+                                nomeCandidato.setText(c.getNome());
+                                partidoCandidato.setText(c.getPartido());
+                                fotoCandidato.setImageBitmap(c.getFoto());
+                                found = true;
+                                break;
+                            }
+                        }
+
+                        if(!found){
+                            fotoCandidato.setVisibility(View.VISIBLE);
+                            nome.setVisibility(View.VISIBLE);
+                            nomeCandidato.setVisibility(View.VISIBLE);
+                            partido.setVisibility(View.GONE);
+                            partidoCandidato.setVisibility(View.GONE);
+
+                            nomeCandidato.setText("NULO");
+                            fotoCandidato.setImageBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.deafault_face));
+                        }
+                    }
+                }
                 break;
         }
+    }
+
+    public void loadCandidatos(){
+
+        //Presidentes
+        Candidato diegoOriginal = new Candidato();
+        diegoOriginal.setNome("Diego Colombo Dias");
+        diegoOriginal.setNumero("13");
+        diegoOriginal.setPartido("Partido da Realidade Virtual");
+        diegoOriginal.setFoto(BitmapFactory.decodeResource(getResources(),R.drawable.diego_original));
+
+        Candidato diegoOtaku = new Candidato();
+        diegoOtaku.setNome("Paulo Yagami Elric");
+        diegoOtaku.setNumero("25");
+        diegoOtaku.setPartido("Partido dos Otakus Unidos");
+        diegoOtaku.setFoto(BitmapFactory.decodeResource(getResources(),R.drawable.diego_otaku));
+
+        Candidato diegoFunkeiro = new Candidato();
+        diegoFunkeiro.setNome("Jhonin da Hornet");
+        diegoFunkeiro.setNumero("17");
+        diegoFunkeiro.setPartido("Partido do Funk Oestentação");
+        diegoFunkeiro.setFoto(BitmapFactory.decodeResource(getResources(),R.drawable.diego_funkeiro));
+
+        //Governador
+        Candidato diegoAssassino = new Candidato();
+        diegoAssassino.setNome("Josafá Matador");
+        diegoAssassino.setNumero("171");
+        diegoAssassino.setPartido("Partido de Cléber");
+        diegoAssassino.setFoto(BitmapFactory.decodeResource(getResources(),R.drawable.diego_assassino));
+
+        Candidato diegoYoutuber = new Candidato();
+        diegoYoutuber.setNome("Joaquim Gameplays");
+        diegoYoutuber.setNumero("555");
+        diegoYoutuber.setPartido("Partido Digital Influencer do Brasil");
+        diegoYoutuber.setFoto(BitmapFactory.decodeResource(getResources(),R.drawable.diego_youtuber));
+
+        Candidato diegoSupreme = new Candidato();
+        diegoSupreme.setNome("Theo Albuquerque Bragança");
+        diegoSupreme.setNumero("999");
+        diegoSupreme.setPartido("Partido do Outfit do Brasil");
+        diegoSupreme.setFoto(BitmapFactory.decodeResource(getResources(),R.drawable.diego_supreme));
+
+        candidatos.add(diegoOriginal);
+        candidatos.add(diegoOtaku);
+        candidatos.add(diegoFunkeiro);
+        candidatos.add(diegoAssassino);
+        candidatos.add(diegoYoutuber);
+        candidatos.add(diegoSupreme);
     }
 }
