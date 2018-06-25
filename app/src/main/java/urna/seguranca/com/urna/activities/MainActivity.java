@@ -708,7 +708,9 @@ public class MainActivity extends AppCompatActivity {
         myPaint.setStrokeWidth(10);
         // convert to bitmap:
 
-        Bitmap bm = BitmapFactory.decodeResource(getResources(),R.drawable.boleta);
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inScaled = false;
+        Bitmap bm = BitmapFactory.decodeResource(getResources(),R.drawable.boleta, options);
 
         //Utils.matToBitmap(m, bm);
         Bitmap mutable = bm.copy(Bitmap.Config.ARGB_8888, true);
@@ -720,15 +722,15 @@ public class MainActivity extends AppCompatActivity {
             for(int i = 0; i < numPresidente.length(); i++){
 
                 if(numPresidente.charAt(i) ==  '0'){
-                    float centroY = 866 + (numLinePresidente * 56);
-                    float centroX = 234 + (9 * 130);
-                    c.drawRect(centroX - 33, centroY - 15, centroX + 33, centroY + 15, myPaint);
+                    float centroY = 288.6f + (numLinePresidente * 18.66f);
+                    float centroX = 78 + (9 * 43.33f);
+                    c.drawRect(centroX - 11, centroY - 5, centroX + 11, centroY + 5, myPaint);
                     numLinePresidente ++;
 
                 }else{
-                    float centroY = 866 + (numLinePresidente * 56);
-                    float centroX = 234 + (((numPresidente.charAt(i) - '0') - 1) * 130);
-                    c.drawRect(centroX - 33, centroY - 15, centroX + 33, centroY + 15, myPaint);
+                    float centroY = 288.6f + (numLinePresidente * 18.66f);
+                    float centroX = 78 + (((numPresidente.charAt(i) - '0') - 1) * 43.33f);
+                    c.drawRect(centroX - 11, centroY - 5, centroX + 11, centroY + 5, myPaint);
                     numLinePresidente ++;
 
                 }
@@ -738,10 +740,10 @@ public class MainActivity extends AppCompatActivity {
             Paint textPresidentePaint = new Paint();
             textPresidentePaint.setColor(Color.rgb(0, 0, 0));
             textPresidentePaint.setTextAlign(Paint.Align.CENTER);
-            textPresidentePaint.setTextSize(50);
+            textPresidentePaint.setTextSize(15);
             textPresidentePaint.setFlags(Paint.UNDERLINE_TEXT_FLAG);
             textPresidentePaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
-            c.drawText(numPresidente, 574 * 3, 310 * 3, textPresidentePaint );
+            c.drawText(numPresidente, 574, 310, textPresidentePaint );
 
             Bitmap bmPresidente = null;
             boolean found = false;
@@ -758,23 +760,23 @@ public class MainActivity extends AppCompatActivity {
             }
 
             Rect src = new Rect(0,0,bmPresidente.getWidth()-1, bmPresidente.getHeight()-1);
-            Rect dest = new Rect(540 * 3,239 * 3,605 * 3, 295 * 3);
+            Rect dest = new Rect(540,239,605, 295);
             c.drawBitmap(bmPresidente, src, dest, null);
 
         }else{
             Paint textPresidentePaint = new Paint();
             textPresidentePaint.setColor(Color.rgb(0, 0, 0));
             textPresidentePaint.setTextAlign(Paint.Align.CENTER);
-            textPresidentePaint.setTextSize(50);
+            textPresidentePaint.setTextSize(15);
             textPresidentePaint.setFlags(Paint.UNDERLINE_TEXT_FLAG);
             textPresidentePaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
-            c.drawText("BRANCO", 574 * 3, 310 * 3, textPresidentePaint );
+            c.drawText("BRANCO", 574, 310, textPresidentePaint );
 
 
             Bitmap bmPresidente = BitmapFactory.decodeResource(getResources(),R.drawable.deafault_face);
 
             Rect src = new Rect(0,0,bmPresidente.getWidth()-1, bmPresidente.getHeight()-1);
-            Rect dest = new Rect(540 * 3,239 * 3,605 * 3, 295 * 3);
+            Rect dest = new Rect(540,239,605, 295);
             c.drawBitmap(bmPresidente, src, dest, null);
         }
 
@@ -783,15 +785,15 @@ public class MainActivity extends AppCompatActivity {
             for(int i = 0; i < numDeputado.length(); i++){
 
                 if(numDeputado.charAt(i) ==  '0'){
-                    float centroY = 1077 + (numLineDeputado * 52);
-                    float centroX = 231 + (9 * 130.5f);
-                    c.drawRect(centroX - 33, centroY - 15, centroX + 33, centroY + 15, myPaint);
+                    float centroY = 359 + (numLineDeputado * 17.33f);
+                    float centroX = 77 + (9 * 43.5f);
+                    c.drawRect(centroX - 11, centroY - 5, centroX + 11, centroY + 5, myPaint);
                     numLineDeputado ++;
 
                 }else{
-                    float centroY = 1077 + (numLineDeputado * 52);
-                    float centroX = 231 + (((numDeputado.charAt(i) - '0') - 1) * 130.5f);
-                    c.drawRect(centroX - 33, centroY - 15, centroX + 33, centroY + 15, myPaint);
+                    float centroY = 359 + (numLineDeputado * 17.33f);
+                    float centroX = 77 + (((numDeputado.charAt(i) - '0') - 1) * 43.5f);
+                    c.drawRect(centroX - 11, centroY - 5, centroX + 11, centroY + 5, myPaint);
                     numLineDeputado ++;
 
                 }
@@ -802,10 +804,10 @@ public class MainActivity extends AppCompatActivity {
             Paint textDeputadoPaint = new Paint();
             textDeputadoPaint.setColor(Color.rgb(0, 0, 0));
             textDeputadoPaint.setTextAlign(Paint.Align.CENTER);
-            textDeputadoPaint.setTextSize(50);
+            textDeputadoPaint.setTextSize(15);
             textDeputadoPaint.setFlags(Paint.UNDERLINE_TEXT_FLAG);
             textDeputadoPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
-            c.drawText(numDeputado, 574 * 3, 418 * 3, textDeputadoPaint );
+            c.drawText(numDeputado, 574, 418, textDeputadoPaint );
 
             Bitmap bmGovernador = null;
             boolean found = false;
@@ -822,22 +824,22 @@ public class MainActivity extends AppCompatActivity {
             }
 
             Rect src = new Rect(0,0,bmGovernador.getWidth()-1, bmGovernador.getHeight()-1);
-            Rect dest = new Rect(540 * 3,343 * 3,605 * 3, 399 * 3);
+            Rect dest = new Rect(540,343,605, 399);
             c.drawBitmap(bmGovernador, src, dest, null);
 
         }else{
             Paint textDeputadoPaint = new Paint();
             textDeputadoPaint.setColor(Color.rgb(0, 0, 0));
             textDeputadoPaint.setTextAlign(Paint.Align.CENTER);
-            textDeputadoPaint.setTextSize(50);
+            textDeputadoPaint.setTextSize(15);
             textDeputadoPaint.setFlags(Paint.UNDERLINE_TEXT_FLAG);
             textDeputadoPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
-            c.drawText("BRANCO", 574 * 3, 418 * 3, textDeputadoPaint );
+            c.drawText("BRANCO", 574, 418, textDeputadoPaint );
 
             Bitmap bmGovernador = BitmapFactory.decodeResource(getResources(),R.drawable.deafault_face);
 
             Rect src = new Rect(0,0,bmGovernador.getWidth()-1, bmGovernador.getHeight()-1);
-            Rect dest = new Rect(540 * 3,343 * 3,605 * 3, 399 * 3);
+            Rect dest = new Rect(540,343,605, 399);
             c.drawBitmap(bmGovernador, src, dest, null);
         }
 
