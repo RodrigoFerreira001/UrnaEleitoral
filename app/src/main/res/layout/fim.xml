@@ -19,7 +19,7 @@
         android:id="@+id/textView5"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Verifique a boleta gerada e confirme caso todas as informações estiverem corretas"
+        android:text="Verifique a boleta gerada. CONFIRME caso todas as informações estiverem corretas"
         android:textAlignment="center"
         android:textSize="18sp"
         android:textStyle="bold" />
