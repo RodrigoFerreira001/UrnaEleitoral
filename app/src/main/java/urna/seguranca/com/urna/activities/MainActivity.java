@@ -20,6 +20,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -27,6 +28,7 @@ import android.widget.Toast;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -39,6 +41,9 @@ import urna.seguranca.com.urna.R;
 import urna.seguranca.com.urna.models.Candidato;
 
 public class MainActivity extends AppCompatActivity {
+
+    String endereco = "192.168.1.101";
+    int porta = 8002;
 
     ArrayList<Candidato> candidatos = new ArrayList<>();
     int votosBrancos = 0;
@@ -309,6 +314,35 @@ public class MainActivity extends AppCompatActivity {
                 partido.setVisibility(View.GONE);
                 partidoCandidato.setVisibility(View.GONE);
                 instrucoes.setVisibility(View.GONE);
+            }
+        });
+
+        btcorrige.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle("Configurar Urna");
+                LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+                View v = inflater.inflate(R.layout.config, null);
+
+                final EditText eip = v.findViewById(R.id.ip);
+                final EditText eporta = v.findViewById(R.id.porta);
+                builder.setView(v);
+
+                eip.setText(endereco);
+                eporta.setText(String.valueOf(porta));
+
+                builder.setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        endereco = eip.getText().toString();
+                        porta = Integer.parseInt(eporta.getText().toString());
+                    }
+                }).setNegativeButton("Cancelar", null);
+
+                builder.create().show();
+
+                return true;
             }
         });
 
@@ -817,7 +851,7 @@ public class MainActivity extends AppCompatActivity {
         protected Boolean doInBackground(Void... voids) {
 
             try {
-                client = new Socket("192.168.1.101", 8002);
+                client = new Socket(endereco, porta);
                 return true;
             } catch (IOException e) {
                 return false;
@@ -841,7 +875,7 @@ public class MainActivity extends AppCompatActivity {
 
 
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bitmaps[0].compress(Bitmap.CompressFormat.PNG, 100, stream);
+            bitmaps[0].compress(Bitmap.CompressFormat.JPEG, 100, stream);
             byte[] byteArray = stream.toByteArray();
 
             int fileSize = byteArray.length;
@@ -849,7 +883,7 @@ public class MainActivity extends AppCompatActivity {
             int rest = fileSize - (chunks * 1024);
 
 
-            String fileName = "voto" + String.valueOf(voteCount) + ".png;-;-";
+            String fileName = "voto" + String.valueOf(voteCount) + ".jpg;-;-";
             fileName += StringUtils.repeat("0", 1024 - fileName.length());
 
             try {
